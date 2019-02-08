@@ -1,0 +1,10 @@
+program = {SOI ~ sexpr* ~ EOI}
+sexpr = {"(" ~ (sexpr | atom)* ~ ")"}
+atom = {symbol }
+symbol = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "-")* ~ &terminate}
+string = ${ "\"" ~ string_char ~ "\"" ~ &terminate}
+string_char = {
+    ASCII_ALPHANUMERIC | WHITESPACE | "/" | "_" | ";" | ":" | "-" | "&" | "."
+}
+terminate = _{WHITESPACE | ")"}
+WHITESPACE = _{ " " | "\n" | "\r"}
