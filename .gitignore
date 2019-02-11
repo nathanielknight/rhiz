@@ -1,2 +1,7 @@
-/target
+target/
 **/*.rs.bk
+
+# Ignore lockfile during development
+Cargo.lock
+
+
