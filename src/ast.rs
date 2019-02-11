@@ -11,6 +11,45 @@ pub enum RhizValue {
     String(String),
 }
 
+impl std::convert::From<&RhizValue> for String {
+    fn from(v: &RhizValue) -> String {
+        match v {
+            RhizValue::String(s) => format!("\"{}\"", s),
+            RhizValue::Symbol(s) => s.to_owned(),
+            RhizValue::SExpr(contents) => {
+                let mut outp = String::new();
+                let mut items = contents.iter();
+                loop {
+                    match items.next() {
+                        Some(i) => {
+                            let s: String = i.into();
+                            outp.push_str(&s);
+                            outp.push(' ');
+                        }
+                        None => break,
+                    }
+                }
+                outp
+            }
+            RhizValue::Program(sexprs) => {
+                let mut outp = String::new();
+                let mut items = sexprs.iter();
+                loop {
+                    match items.next() {
+                        Some(i) => {
+                            let s: String = i.into();
+                            outp.push_str(&s);
+                            outp.push('\n');
+                        }
+                        None => break,
+                    }
+                }
+                outp
+            }
+        }
+    }
+}
+
 fn collect_or_first_error(pairs: Pairs<Rule>) -> Result<Vec<RhizValue>, String> {
     let mut result = Vec::new();
     for p in pairs {
