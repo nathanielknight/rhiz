@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use crate::ast;
-use crate::executor::{Executable, ExecutionResult};
 
 pub type CompilationError = Box<std::error::Error>;
 pub type CompilationResult<T> = Result<T, CompilationError>;
@@ -11,9 +10,9 @@ pub type CompilationResult<T> = Result<T, CompilationError>;
 /// (task "name" ["description"] [funcall]*)
 /// ```
 pub struct Task<'a> {
-    name: String,
-    description: Option<String>,
-    items: Vec<&'a ast::RhizValue>,
+    pub name: String,
+    pub description: Option<String>,
+    pub items: Vec<&'a ast::RhizValue>,
 }
 
 impl<'a> Task<'a> {
@@ -73,17 +72,11 @@ impl<'a> Task<'a> {
     }
 }
 
-impl<'a> Executable for Task<'a> {
-    fn run(&self) -> ExecutionResult {
-        unimplemented!()
-    }
+pub struct CompiledProgram<'a> {
+    pub tasks: HashMap<String, Task<'a>>,
 }
 
-struct CompiledProgram<'a> {
-    tasks: HashMap<String, Task<'a>>,
-}
-
-fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<CompiledProgram<'a>> {
+pub fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<CompiledProgram<'a>> {
     match prog {
         ast::RhizValue::Program(tasks) => {
             let compiled_tasks = tasks.iter().map(Task::compile);
