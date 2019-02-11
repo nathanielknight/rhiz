@@ -1,8 +1,10 @@
-program = {SOI ~ sexpr* ~ EOI}
+file = _{SOI ~ program ~ EOI}
+program = { sexpr* }
 sexpr = {"(" ~ (sexpr | atom)* ~ ")"}
-atom = {symbol }
+atom = _{ symbol | string }
 symbol = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "-")* ~ &terminate}
-string = ${ "\"" ~ string_char ~ "\"" ~ &terminate}
+string = @{ quote_delim ~ string_char* ~quote_delim ~ &terminate}
+quote_delim = _{ "\""}
 string_char = {
     ASCII_ALPHANUMERIC | WHITESPACE | "/" | "_" | ";" | ":" | "-" | "&" | "."
 }
