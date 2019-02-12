@@ -42,7 +42,7 @@ where
             return Err(ExecutionError::from(format!(
                 "No such task: '{}'",
                 task_name
-            )))
+            )));
         }
     };
     for item in &task.items {
