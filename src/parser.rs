@@ -1,3 +1,5 @@
+// Need to import this for deriving
+#[allow(unused_imports)]
 use pest::Parser;
 
 #[derive(Parser)]
