@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::ast;
 use crate::compiler;
 use crate::functions;
@@ -30,8 +32,8 @@ fn exec_sexpr(contents: &[ast::RhizValue]) -> ExecutionResult {
     execute(name, args)
 }
 
-pub fn exec_task(task_name: &str, program: compiler::CompiledProgram) -> ExecutionResult {
-    let task = match program.tasks.get(task_name) {
+pub fn exec_task(task_name: &str, tasks: HashMap<String, compiler::Task>) -> ExecutionResult {
+    let task = match tasks.get(task_name) {
         Some(t) => t,
         None => {
             return Err(ExecutionError::from(format!(

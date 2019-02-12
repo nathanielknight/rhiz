@@ -72,12 +72,6 @@ impl<'a> Task<'a> {
     }
 }
 
-impl<'a> Executable for Task<'a> {
-    fn run(&self) -> ExecutionResult {
-        unimplemented!()
-    }
-}
-
 pub fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<HashMap<String, Task<'a>>> {
     match prog {
         ast::RhizValue::Program(tasks) => {
