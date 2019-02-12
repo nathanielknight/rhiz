@@ -2,11 +2,11 @@ file = _{SOI ~ program ~ EOI}
 program = { sexpr* }
 sexpr = {"(" ~ (sexpr | atom)* ~ ")"}
 atom = _{ symbol | string }
-symbol = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "-")* ~ &terminate}
-string = @{ quote_delim ~ string_char* ~quote_delim ~ &terminate}
-quote_delim = _{ "\""}
-string_char = {
-    ASCII_ALPHANUMERIC | WHITESPACE | "/" | "_" | ";" | ":" | "-" | "&" | "."
+symbol = @{ (ASCII_ALPHA | "-") ~ (ASCII_ALPHANUMERIC | "-")* }
+string = ${ "\"" ~ inner ~ "\"" }
+inner = @{ char* }
+char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "/" | "f" | "n" | "r")
 }
-terminate = _{WHITESPACE | ")"}
 WHITESPACE = _{ " " | "\n" | "\r"}
