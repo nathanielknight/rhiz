@@ -14,23 +14,10 @@ fn test_parse_empty_sexpr() {
 
 #[test]
 fn test_parse_symbol() {
-    let ok_cases = ["asdf ", "JklL)", "x1 ", "kebab-case\n"];
+    let ok_cases = ["asdf", "JklL)", "x1 ", "kebab-case\n", "-l"];
     for case in &ok_cases {
         let msg = format!("Expected '{}' to parse to a symbol", case);
         RhizParser::parse(Rule::symbol, case).expect(&msg);
-    }
-    let err_cases = ["1x", "asdf\"jkl", "no_underscores"];
-    for case in &err_cases {
-        match RhizParser::parse(Rule::symbol, case) {
-            Err(_) => continue, // because we expected an error
-            Ok(parsed) => {
-                let msg = format!(
-                    "Unexpected successful parse of symbol: {} ({:?})",
-                    case, parsed
-                );
-                panic!(msg);
-            }
-        };
     }
 }
 
