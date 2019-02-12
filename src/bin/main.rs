@@ -53,7 +53,7 @@ fn print_tasks(
             Some(t) => t,
             None => "",
         };
-        println!("  {} : {}", name, desc);
+        println!(" {: <12} :  {}", name, desc);
     }
     Ok(())
 }
