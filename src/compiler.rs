@@ -29,8 +29,6 @@ impl<'a> Task<'a> {
                 if s != "task" {
                     let msg = "Only 'task' declarations allowed at the top-level of a Rhizfile";
                     return Err(CompilationError::from(msg));
-                } else {
-                    ()
                 }
             }
             _ => {
