@@ -72,11 +72,13 @@ impl<'a> Task<'a> {
     }
 }
 
-pub struct CompiledProgram<'a> {
-    pub tasks: HashMap<String, Task<'a>>,
+impl<'a> Executable for Task<'a> {
+    fn run(&self) -> ExecutionResult {
+        unimplemented!()
+    }
 }
 
-pub fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<CompiledProgram<'a>> {
+pub fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<HashMap<String, Task<'a>>> {
     match prog {
         ast::RhizValue::Program(tasks) => {
             let compiled_tasks = tasks.iter().map(Task::compile);
@@ -87,7 +89,7 @@ pub fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<CompiledProgra
                     Err(e) => return Err(e),
                 };
             }
-            Ok(CompiledProgram { tasks })
+            Ok(tasks)
         }
         _ => Err(CompilationError::from(
             "I only know how to compile programs",
