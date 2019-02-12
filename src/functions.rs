@@ -56,6 +56,7 @@ fn abort(args: &[RhizValue], _: &Path) -> ExecutionResult {
 
 fn delete_file(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     use std::fs;
+    assert!(working_dir.is_dir());
     check_args_len!("delete-file", args, 1);
     let fpath = if let RhizValue::String(fpath) = &args[0] {
         fpath
