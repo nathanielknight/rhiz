@@ -79,13 +79,13 @@ where
 
 pub fn parse_rhiz_program(src: &str) -> Result<RhizValue, String> {
     let mut parse_tree =
-        RhizParser::parse(Rule::program, src).map_err(|e| format!("Parsing error: {}", e))?;
+        RhizParser::parse(Rule::file, src).map_err(|e| format!("Parsing error: {}", e))?;
     let prog = parse_tree.next().expect("Expected a program");
     parse_value(prog)
 }
 
 #[test]
 fn test_parse_values() {
-    let example_src = r#"(Once there was) (a "way" to get "back home""#;
+    let example_src = r#"(Once there was) (a "way" to get "back home")"#;
     assert!(parse_rhiz_program(example_src).is_ok())
 }
