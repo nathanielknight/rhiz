@@ -1,0 +1,6 @@
+(task "hello"
+  "Rhiz says hello to the world"
+  (log "Rhiz says hello!"))
+
+(task "abort"
+  (abort "We barely knew ye"))
