@@ -1,7 +1,8 @@
 use crate::ast::RhizValue;
 use crate::executor::{ExecutionError, ExecutionResult};
+use std::path::Path;
 
-type RhizFunction = Fn(&[RhizValue]) -> ExecutionResult;
+type RhizFunction = Fn(&[RhizValue], &Path) -> ExecutionResult;
 
 macro_rules! error_with {
     ($msg:expr) => {
@@ -31,7 +32,7 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
     }
 }
 
-fn log(args: &[RhizValue]) -> ExecutionResult {
+fn log(args: &[RhizValue], _: &Path) -> ExecutionResult {
     check_args_len!("log", args, 1);
     let msg = if let RhizValue::String(s) = &args[0] {
         s
@@ -42,7 +43,7 @@ fn log(args: &[RhizValue]) -> ExecutionResult {
     Ok(())
 }
 
-fn abort(args: &[RhizValue]) -> ExecutionResult {
+fn abort(args: &[RhizValue], _: &Path) -> ExecutionResult {
     check_args_len!("abort", args, 1);
     let msg = if let RhizValue::String(s) = &args[0] {
         s
@@ -53,16 +54,19 @@ fn abort(args: &[RhizValue]) -> ExecutionResult {
     error_with!("Execution aborted")
 }
 
-fn delete_file(args: &[RhizValue]) -> ExecutionResult {
+fn delete_file(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     use std::fs;
-    use std::path::Path;
     check_args_len!("delete-file", args, 1);
-    let fname = if let RhizValue::String(fname) = &args[0] {
-        fname
+    let fpath = if let RhizValue::String(fpath) = &args[0] {
+        fpath
     } else {
         error_with!("`delete-file` takes a string");
     };
-    let fpath = Path::new(fname);
-    fs::remove_file(fpath)?;
+    let target_path = {
+        let mut pbuf = working_dir.to_path_buf();
+        pbuf.push(fpath);
+        pbuf
+    };
+    fs::remove_file(target_path)?;
     Ok(())
 }
