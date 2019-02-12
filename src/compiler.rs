@@ -79,11 +79,7 @@ impl<'a> Executable for Task<'a> {
     }
 }
 
-struct CompiledProgram<'a> {
-    tasks: HashMap<String, Task<'a>>,
-}
-
-fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<CompiledProgram<'a>> {
+pub fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<HashMap<String, Task<'a>>> {
     match prog {
         ast::RhizValue::Program(tasks) => {
             let compiled_tasks = tasks.iter().map(Task::compile);
@@ -94,7 +90,7 @@ fn compile<'a>(prog: &'a ast::RhizValue) -> CompilationResult<CompiledProgram<'a
                     Err(e) => return Err(e),
                 };
             }
-            Ok(CompiledProgram { tasks })
+            Ok(tasks)
         }
         _ => Err(CompilationError::from(
             "I only know how to compile programs",
