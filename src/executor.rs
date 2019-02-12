@@ -23,7 +23,7 @@ pub fn execute(func_name: &ast::RhizValue, args: &[ast::RhizValue]) -> Execution
 }
 
 fn exec_sexpr(contents: &[ast::RhizValue]) -> ExecutionResult {
-    if contents.len() == 0 {
+    if contents.is_empty() {
         let msg = "Can't eval an empty expression";
         return Err(ExecutionError::from(msg));
     }
@@ -32,7 +32,10 @@ fn exec_sexpr(contents: &[ast::RhizValue]) -> ExecutionResult {
     execute(name, args)
 }
 
-pub fn exec_task(task_name: &str, tasks: HashMap<String, compiler::Task>) -> ExecutionResult {
+pub fn exec_task<S>(task_name: &str, tasks: &HashMap<String, compiler::Task, S>) -> ExecutionResult
+where
+    S: ::std::hash::BuildHasher,
+{
     let task = match tasks.get(task_name) {
         Some(t) => t,
         None => {

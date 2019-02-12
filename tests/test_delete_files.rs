@@ -18,7 +18,7 @@ fn test_delete_file() {
     let compiled = compile(&parsed).unwrap();
 
     fs::write(&fname, "test contents").unwrap();
-    exec_task(task_name, compiled).unwrap();
+    exec_task(task_name, &compiled).unwrap();
 
     assert!(!fpath.exists());
 }

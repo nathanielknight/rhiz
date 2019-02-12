@@ -18,31 +18,21 @@ impl std::convert::From<&RhizValue> for String {
             RhizValue::Symbol(s) => s.to_owned(),
             RhizValue::SExpr(contents) => {
                 let mut outp = String::new();
-                let mut items = contents.iter();
-                loop {
-                    match items.next() {
-                        Some(i) => {
-                            let s: String = i.into();
-                            outp.push_str(&s);
-                            outp.push(' ');
-                        }
-                        None => break,
-                    }
+                let items = contents.iter();
+                for i in items {
+                    let s: String = i.into();
+                    outp.push_str(&s);
+                    outp.push(' ');
                 }
                 outp
             }
             RhizValue::Program(sexprs) => {
                 let mut outp = String::new();
-                let mut items = sexprs.iter();
-                loop {
-                    match items.next() {
-                        Some(i) => {
-                            let s: String = i.into();
-                            outp.push_str(&s);
-                            outp.push('\n');
-                        }
-                        None => break,
-                    }
+                let items = sexprs.iter();
+                for i in items {
+                    let s: String = i.into();
+                    outp.push_str(&s);
+                    outp.push(' ');
                 }
                 outp
             }
