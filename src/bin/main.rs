@@ -37,10 +37,9 @@ fn find_rhizfile() -> CommandResult<std::path::PathBuf> {
     }
 }
 
-fn file_dir(filepath: &std::path::PathBuf) -> CommandResult<std::path::PathBuf> {
+fn file_dir<'a>(filepath: &'a std::path::PathBuf) -> CommandResult<&'a std::path::Path> {
     filepath
         .parent()
-        .map(|p| p.to_owned())
         .ok_or(CommandError::from("Rhizfile has no parent?"))
 }
 
@@ -62,15 +61,15 @@ fn print_tasks(
 fn main() -> CommandResult<()> {
     use std::env;
 
-    let rhiz_path_buf = &find_rhizfile()?;
-    let rhiz_path = rhiz_path_buf.as_path();
+    let rhizfile_path = &find_rhizfile()?;
+    let working_dir_path = file_dir(rhizfile_path)?;
 
-    let src = std::fs::read_to_string(rhiz_path_buf)?;
+    let src = std::fs::read_to_string(rhizfile_path)?;
     let parsed = &ast::parse_rhiz_program(&src)?;
     let tasks = &compiler::compile(parsed)?;
 
     match env::args().nth(1) {
-        Some(tname) => executor::exec_task(&tname, tasks, rhiz_path),
-        None => print_tasks(rhiz_path_buf, tasks),
+        Some(tname) => executor::exec_task(&tname, tasks, working_dir_path),
+        None => print_tasks(rhizfile_path, tasks),
     }
 }
