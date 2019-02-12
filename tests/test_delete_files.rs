@@ -17,8 +17,12 @@ fn test_delete_file() {
     let parsed = parse_rhiz_program(&src).unwrap();
     let compiled = compile(&parsed).unwrap();
 
+    let cwd_b = std::env::current_dir().unwrap();
+    let cwd = cwd_b.as_path();
+
     fs::write(&fname, "test contents").unwrap();
-    exec_task(task_name, &compiled).unwrap();
+
+    exec_task(task_name, &compiled, cwd).unwrap();
 
     assert!(!fpath.exists());
 }
