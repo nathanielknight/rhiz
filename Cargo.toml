@@ -3,13 +3,13 @@ name = "rhiz"
 version = "0.1.0"
 authors = ["Nat Knight <nathaniel.ep@gmail.com>"]
 edition = "2018"
-description = "A deliberately minimal task runner."
+description = "A deliberately minimal cross-platform task runner."
 license = "MIT"
 readme = "README.md"
 repository = "https://bitbucket.org/nathanielknight/rhiz/"
 homepage = "https://bitbucket.org/nathanielknight/rhiz/"
 documentation = "https://bitbucket.org/nathanielknight/rhiz/"
-keywords = ["tool", "task"]
+keywords = ["tool", "task", "windows", "linux"]
 categories = ["command-line-utilities", "development-tools::build-utils"]
 exclude = ["Rhizfile"]
 
