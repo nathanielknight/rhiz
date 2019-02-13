@@ -3,9 +3,19 @@ name = "rhiz"
 version = "0.1.0"
 authors = ["Nat Knight <nathaniel.ep@gmail.com>"]
 edition = "2018"
+description = "A deliberately minimal task runner."
+license = "MIT"
+readme = "README.md"
+repository = "https://bitbucket.org/nathanielknight/rhiz/"
+homepage = "https://bitbucket.org/nathanielknight/rhiz/"
+documentation = "https://bitbucket.org/nathanielknight/rhiz/"
+keywords = ["tool", "task"]
+categories = ["command-line-utilities", "development-tools::build-utils"]
+exclude = ["Rhizfile"]
+
 
 [features]
-default = ["glob"]
+default = ["glob"]  
 
 [dependencies]
 pest = "2.0"
