@@ -1,3 +1,4 @@
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -31,6 +32,7 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
         "abort" => Some(Box::new(abort)),
         "delete-file" => Some(Box::new(delete_file)),
         "delete-dir" => Some(Box::new(delete_dir)),
+        "empty-dir" => Some(Box::new(empty_dir)),
         "exec" => Some(Box::new(exec)),
         _ => None,
     }
@@ -76,7 +78,6 @@ fn abort(args: &[RhizValue], _: &Path) -> ExecutionResult {
 
 /// Delete a file (by absolute path, or path relative to the Rhizfile).
 fn delete_file(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
-    use std::fs;
     assert!(working_dir.is_dir());
     check_args_len!("delete-file", args, 1);
     let fpath = if let RhizValue::String(fpath) = &args[0] {
@@ -103,7 +104,7 @@ fn delete_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
         error_with!("`delete-dir` is for deleting directories");
     }
 
-    std::fs::remove_dir_all(&target_path)?;
+    fs::remove_dir_all(&target_path)?;
 
     Ok(())
 }
@@ -132,5 +133,43 @@ fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     let mut child_process = cmd.spawn()?;
     child_process.wait()?;
 
+    Ok(())
+}
+
+/// If a directory exists, empty it. If it doesn't, create it (and its parents, if necessary).
+fn empty_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
+    assert!(working_dir.is_dir());
+    if args.is_empty() {
+        error_with!("`empty-dir` needs an argument");
+    }
+    let dpath = if let RhizValue::String(dpath) = &args[0] {
+        dpath
+    } else {
+        error_with!("`delete-dir` takes a string");
+    };
+    let target_path = join_cwd(working_dir, dpath);
+    match (target_path.exists(), target_path.is_dir()) {
+        (false, _) => {
+            fs::create_dir_all(target_path)?;
+        }
+        (true, true) => {
+            let contents = fs::read_dir(target_path)?;
+            for child_r in contents {
+                let child = child_r?;
+                let meta = child.metadata()?;
+                if meta.is_dir() {
+                    fs::remove_dir_all(child.path())?;
+                } else if meta.is_file() {
+                    fs::remove_file(child.path())?;
+                } else {
+                    let msg = format!("'{}' isn't a directory or a file?", child.path().display());
+                    error_with!(msg);
+                }
+            }
+        }
+        (true, false) => {
+            error_with!("`delete-dir` can't operate on a file");
+        }
+    };
     Ok(())
 }
