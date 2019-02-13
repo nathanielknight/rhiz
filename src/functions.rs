@@ -108,7 +108,25 @@ fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     }
 
     let mut child_process = cmd.spawn()?;
-    child_process.wait()?;
+    let exit_code = child_process.wait()?;
+    if !exit_code.success() {
+        let mut cmd_string = String::new();
+        cmd_string.push_str(&String::from(&args[0]));
+        for arg in &args[1..] {
+            cmd_string.push(' ');
+            cmd_string.push_str(&String::from(arg));
+        }
+        let code_msg = match exit_code.code() {
+            None => String::new(),
+            Some(c) => format!("(exit code: {})", c),
+        };
+
+        error_with!(
+            "External command returned an error code: {} {}",
+            cmd_string,
+            code_msg
+        );
+    }
 
     Ok(())
 }
