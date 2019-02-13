@@ -4,3 +4,6 @@
 
 (task "abort"
   (abort "We barely knew ye"))
+
+(task "install"
+  (exec cargo install rhiz --path . --force))
