@@ -50,10 +50,9 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
     };
     match symbol_name.as_ref() {
         "log" => Some(Box::new(log)),
-        "delete-file" => Some(Box::new(delete_file)),
-        "delete-dir" => Some(Box::new(delete_dir)),
-        "empty-dir" => Some(Box::new(empty_dir)),
         "exec" => Some(Box::new(exec)),
+        "empty-dir" => Some(Box::new(empty_dir)),
+        "delete" => Some(Box::new(delete)),
         _ => None,
     }
 }
@@ -83,30 +82,14 @@ fn log(args: &[RhizValue], _: &Path) -> ExecutionResult {
 }
 
 /// Delete a file (by absolute path, or path relative to the Rhizfile).
-fn delete_file(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
+fn delete(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     assert!(working_dir.is_dir());
-    check_args_len!("delete-file", args, 1);
-    let fpath = get_arg!("delete_file", args, 0, RhizValue::String);
+    check_args_len!("delete", args, 1);
+    let fpath = get_arg!("delete", args, 0, RhizValue::String);
 
     let target_path = join_cwd(working_dir, fpath);
 
     fs::remove_file(target_path)?;
-
-    Ok(())
-}
-
-fn delete_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
-    assert!(working_dir.is_dir());
-    check_args_len!("delete-dir", args, 1);
-    let dpath = get_arg!("delete-dir", args, 0, RhizValue::String);
-
-    let target_path = join_cwd(working_dir, dpath);
-
-    if !target_path.is_dir() {
-        error_with!("`delete-dir` is for deleting directories");
-    }
-
-    fs::remove_dir_all(&target_path)?;
 
     Ok(())
 }

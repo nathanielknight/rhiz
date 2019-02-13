@@ -10,7 +10,7 @@ fn test_delete_file() {
     let task_name = "test-deletion";
     let fname = "test-target";
     let fpath = Path::new(fname);
-    let src = format!(r#"(task "{}" (delete-file "{}"))"#, task_name, fname);
+    let src = format!(r#"(task "{}" (delete "{}"))"#, task_name, fname);
 
     println!("delete-file test source: {}", src);
 
