@@ -8,18 +8,39 @@ use crate::executor::{ExecutionError, ExecutionResult};
 type RhizFunction = Fn(&[RhizValue], &Path) -> ExecutionResult;
 
 macro_rules! error_with {
-    ($msg:expr) => {
-        return Err(ExecutionError::from($msg));
+    ($msg:expr $(, $p:expr)* ) => {
+        {
+            let msg = format!($msg$(, $p)*);
+            return Err(ExecutionError::from(msg));
+        }
     };
 }
 
 macro_rules! check_args_len {
     ( $fname:expr, $args:expr, $cnt:expr ) => {
         if $args.len() != $cnt {
-            let msg = format!("`{}` takes {} argument(s)", $fname, $cnt);
-            error_with!(msg)
+            error_with!("`{}` takes {} argument(s)", $fname, $cnt)
         }
     };
+}
+
+macro_rules! get_arg {
+    ( $fname:expr, $args:expr, $idx:expr, $kind:path) => {{
+        let arg = match $args.get($idx) {
+            Some(a) => a,
+            None => error_with!("Expected `{}` to have at least {} arguments", $fname, $idx),
+        };
+        if let $kind(v) = arg {
+            v
+        } else {
+            error_with!(
+                "Expected argument {} to `{}` to be a {}",
+                $idx,
+                $fname,
+                stringify!($kind)
+            );
+        }
+    }};
 }
 
 pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
@@ -55,24 +76,20 @@ fn val_to_string(rval: &RhizValue) -> Option<String> {
 /// Print a message to the console.
 fn log(args: &[RhizValue], _: &Path) -> ExecutionResult {
     check_args_len!("log", args, 1);
-    let msg = if let RhizValue::String(s) = &args[0] {
-        s
-    } else {
-        error_with!("`log` takes a string");
-    };
+    let msg = get_arg!("log", args, 0, RhizValue::String);
+
     println!("{}", msg);
+
     Ok(())
 }
 
 /// Stop executing the Rhizfile, printing an error message.
 fn abort(args: &[RhizValue], _: &Path) -> ExecutionResult {
     check_args_len!("abort", args, 1);
-    let msg = if let RhizValue::String(s) = &args[0] {
-        s
-    } else {
-        error_with!("`abort` takes a string");
-    };
+    let msg = get_arg!("abort", args, 0, RhizValue::String);
+
     eprintln!("{}", msg);
+
     error_with!("Execution aborted")
 }
 
@@ -80,26 +97,22 @@ fn abort(args: &[RhizValue], _: &Path) -> ExecutionResult {
 fn delete_file(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     assert!(working_dir.is_dir());
     check_args_len!("delete-file", args, 1);
-    let fpath = if let RhizValue::String(fpath) = &args[0] {
-        fpath
-    } else {
-        error_with!("`delete-file` takes a string");
-    };
+    let fpath = get_arg!("delete_file", args, 0, RhizValue::String);
+
     let target_path = join_cwd(working_dir, fpath);
 
     fs::remove_file(target_path)?;
+
     Ok(())
 }
 
 fn delete_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     assert!(working_dir.is_dir());
     check_args_len!("delete-dir", args, 1);
-    let dpath = if let RhizValue::String(dpath) = &args[0] {
-        dpath
-    } else {
-        error_with!("`delete-dir` takes a string");
-    };
+    let dpath = get_arg!("delete-dir", args, 0, RhizValue::String);
+
     let target_path = join_cwd(working_dir, dpath);
+
     if !target_path.is_dir() {
         error_with!("`delete-dir` is for deleting directories");
     }
@@ -114,11 +127,14 @@ fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     if args.is_empty() {
         error_with!("`exec` needs at least one argument");
     }
+
     let cmd_name = val_to_string(&args[0]).ok_or(ExecutionError::from(
         "`exec` takes a string or symbol as a command name",
     ))?;
 
     let mut cmd = Command::new(&cmd_name);
+    cmd.current_dir(working_dir);
+
     if args.len() > 1 {
         let mut cmd_args = Vec::new();
         for arg in args.iter().skip(1) {
@@ -129,7 +145,7 @@ fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
         }
         cmd.args(&cmd_args);
     }
-    cmd.current_dir(working_dir);
+
     let mut child_process = cmd.spawn()?;
     child_process.wait()?;
 
@@ -142,12 +158,10 @@ fn empty_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     if args.is_empty() {
         error_with!("`empty-dir` needs an argument");
     }
-    let dpath = if let RhizValue::String(dpath) = &args[0] {
-        dpath
-    } else {
-        error_with!("`delete-dir` takes a string");
-    };
+    let dpath = get_arg!("empty-dir", args, 0, RhizValue::String);
+
     let target_path = join_cwd(working_dir, dpath);
+
     match (target_path.exists(), target_path.is_dir()) {
         (false, _) => {
             fs::create_dir_all(target_path)?;
@@ -162,8 +176,7 @@ fn empty_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
                 } else if meta.is_file() {
                     fs::remove_file(child.path())?;
                 } else {
-                    let msg = format!("'{}' isn't a directory or a file?", child.path().display());
-                    error_with!(msg);
+                    error_with!("'{}' isn't a directory or a file?", child.path().display());
                 }
             }
         }
@@ -171,5 +184,6 @@ fn empty_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
             error_with!("`delete-dir` can't operate on a file");
         }
     };
+
     Ok(())
 }
