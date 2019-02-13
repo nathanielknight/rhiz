@@ -50,7 +50,6 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
     };
     match symbol_name.as_ref() {
         "log" => Some(Box::new(log)),
-        "abort" => Some(Box::new(abort)),
         "delete-file" => Some(Box::new(delete_file)),
         "delete-dir" => Some(Box::new(delete_dir)),
         "empty-dir" => Some(Box::new(empty_dir)),
@@ -81,16 +80,6 @@ fn log(args: &[RhizValue], _: &Path) -> ExecutionResult {
     println!("{}", msg);
 
     Ok(())
-}
-
-/// Stop executing the Rhizfile, printing an error message.
-fn abort(args: &[RhizValue], _: &Path) -> ExecutionResult {
-    check_args_len!("abort", args, 1);
-    let msg = get_arg!("abort", args, 0, RhizValue::String);
-
-    eprintln!("{}", msg);
-
-    error_with!("Execution aborted")
 }
 
 /// Delete a file (by absolute path, or path relative to the Rhizfile).
