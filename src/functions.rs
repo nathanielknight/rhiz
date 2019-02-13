@@ -53,6 +53,7 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
         "exec" => Some(Box::new(exec)),
         "empty-dir" => Some(Box::new(empty_dir)),
         "delete" => Some(Box::new(delete)),
+        "copy" => Some(Box::new(copy)),
         _ => None,
     }
 }
@@ -157,6 +158,46 @@ fn delete(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     let target_path = join_cwd(working_dir, fpath);
 
     fs::remove_file(target_path)?;
+
+    Ok(())
+}
+
+/// Copy a file (won't overwrite an existing file).
+fn copy(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
+    assert!(working_dir.is_dir());
+    check_args_len!("copy", args, 2);
+
+    let src = get_arg!("copy", args, 0, RhizValue::String);
+    let target = get_arg!("copy", args, 1, RhizValue::String);
+
+    let src_path = Path::new(src);
+    if !(src_path.exists()) {
+        error_with!("`copy`'s source argument ({}) doesn't exist", src);
+    }
+    if !(src_path.is_file()) {
+        error_with!("`copy` only acts on files ({} is not a file)", src);
+    }
+
+    let target_path_buf = {
+        let arg_path = Path::new(target);
+        if arg_path.exists() && arg_path.is_dir() {
+            let mut t = arg_path.to_path_buf();
+            let target_filename = src_path
+                .file_name()
+                .ok_or_else(|| ExecutionError::from("`copy` source doesn't have a file name?"))?;
+            t.push(target_filename);
+            t
+        } else {
+            arg_path.to_owned()
+        }
+    };
+    let target_path = target_path_buf.as_path();
+    assert!(!target_path.is_dir());
+    if target_path.exists() {
+        error_with!("`copy` won't clobber an existing file ({} exists)", target);
+    }
+
+    fs::copy(src_path, target_path)?;
 
     Ok(())
 }
