@@ -81,19 +81,6 @@ fn log(args: &[RhizValue], _: &Path) -> ExecutionResult {
     Ok(())
 }
 
-/// Delete a file (by absolute path, or path relative to the Rhizfile).
-fn delete(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
-    assert!(working_dir.is_dir());
-    check_args_len!("delete", args, 1);
-    let fpath = get_arg!("delete", args, 0, RhizValue::String);
-
-    let target_path = join_cwd(working_dir, fpath);
-
-    fs::remove_file(target_path)?;
-
-    Ok(())
-}
-
 /// Execute an external command
 fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     assert!(working_dir.is_dir());
@@ -157,6 +144,19 @@ fn empty_dir(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
             error_with!("`delete-dir` can't operate on a file");
         }
     };
+
+    Ok(())
+}
+
+/// Delete a file (by absolute path, or path relative to the Rhizfile).
+fn delete(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
+    assert!(working_dir.is_dir());
+    check_args_len!("delete", args, 1);
+    let fpath = get_arg!("delete", args, 0, RhizValue::String);
+
+    let target_path = join_cwd(working_dir, fpath);
+
+    fs::remove_file(target_path)?;
 
     Ok(())
 }
