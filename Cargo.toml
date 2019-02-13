@@ -18,9 +18,9 @@ exclude = ["Rhizfile"]
 default = ["glob"]  
 
 [dependencies]
-pest = "2.0"
-pest_derive = "2.0"
-glob = {version = "*", optional = true}
+pest = "^2.0"
+pest_derive = "^2.0"
+glob = {version = "^0.2", optional = true}
 
 [[bin]]
 name = "rhiz"
