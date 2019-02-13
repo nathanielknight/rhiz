@@ -94,6 +94,7 @@ fn delete(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     Ok(())
 }
 
+/// Execute an external command
 fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     assert!(working_dir.is_dir());
     if args.is_empty() {
