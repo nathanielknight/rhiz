@@ -54,6 +54,7 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
         "empty-dir" => Some(Box::new(empty_dir)),
         "delete" => Some(Box::new(delete)),
         "copy" => Some(Box::new(copy)),
+        "rec-copy" => Some(Box::new(rec_copy)),
         _ => None,
     }
 }
@@ -218,6 +219,87 @@ fn copy(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     }
 
     fs::copy(src_path, target_path)?;
+
+    Ok(())
+}
+
+mod copy_tools {
+    use std::fs;
+    use std::path::Path;
+
+    use crate::executor::{ExecutionError, ExecutionResult};
+
+    fn copy_to(fpath: &Path, target_dir: &Path) -> ExecutionResult {
+        assert!(fpath.exists() && fpath.is_file());
+        assert!(target_dir.exists() && target_dir.is_dir());
+
+        let mut target_dir_buf = target_dir.to_path_buf();
+        let target_fname = fpath
+            .file_name()
+            .ok_or_else(|| ExecutionError::from("File doesn't have a file name?"))?;
+        target_dir_buf.push(target_fname);
+        let target_path = target_dir_buf.as_path();
+
+        fs::copy(fpath, target_path)?;
+
+        Ok(())
+    }
+
+    pub fn copy_dir(dirpath: &Path, target_path: &Path) -> ExecutionResult {
+        assert!(dirpath.exists() && dirpath.is_dir());
+        assert!(target_path.exists() && target_path.is_dir());
+
+        for entry_r in fs::read_dir(dirpath)? {
+            let entry = entry_r?;
+            let meta = entry.metadata()?;
+            if meta.is_file() {
+                copy_to(&entry.path(), target_path)?;
+            } else if meta.is_dir() {
+                let target_dir_path = {
+                    let mut target_pathbuf = target_path.to_path_buf();
+                    target_pathbuf.push(entry.file_name());
+                    target_pathbuf
+                };
+                fs::create_dir(&target_dir_path)?;
+                copy_dir(&entry.path(), &target_dir_path)?;
+            } else {
+                error_with!("'{}' isn't a file or a directory?", entry.path().display());
+            }
+        }
+
+        Ok(())
+    }
+}
+
+/// Recursively copy one directory's contents into another.
+fn rec_copy(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
+    assert!(working_dir.is_dir());
+    check_args_len!("rec-copy", args, 2);
+    let src = get_arg!("rec-copy", args, 0, RhizValue::String);
+    let target = get_arg!("rec-copy", args, 1, RhizValue::String);
+
+    let src_path = Path::new(src);
+    if !src_path.exists() {
+        error_with!("source directory doesn't exist ({})", src_path.display());
+    }
+    if !src_path.is_dir() {
+        error_with!(
+            "source directory isn't a directory ({})",
+            src_path.display()
+        );
+    }
+    let target_path = Path::new(target);
+    if !target_path.exists() {
+        error_with!("target directory doesn't exist ({})", target_path.display());
+    }
+    if !target_path.is_dir() {
+        error_with!(
+            "target directory isn't a directory ({})",
+            target_path.display()
+        );
+    }
+
+    copy_tools::copy_dir(src_path, target_path)?;
 
     Ok(())
 }
