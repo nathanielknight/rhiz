@@ -175,7 +175,9 @@ fn delete(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
 
     let target_path = join_cwd(working_dir, fpath);
 
-    fs::remove_file(target_path)?;
+    if target_path.exists() {
+        fs::remove_file(target_path)?;
+    }
 
     Ok(())
 }
