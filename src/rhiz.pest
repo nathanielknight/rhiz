@@ -10,3 +10,4 @@ char = {
     | "\\" ~ ("\"" | "\\" | "/" | "f" | "n" | "r")
 }
 WHITESPACE = _{ " " | "\n" | "\r"}
+COMMENT = _{ ";" ~ (!NEWLINE ~ ANY)* ~ NEWLINE}

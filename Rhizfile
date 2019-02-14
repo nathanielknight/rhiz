@@ -1,6 +1,7 @@
 (task "hello"
   "Rhiz says hello to the world"
-  (log "Rhiz says hello!"))
+  (log "Rhiz says hello!"))  ;; Such a brave little program!
 
 (task "install"
+  "Install `rhiz` as a local binary"
   (exec cargo install rhiz --path . --force))
