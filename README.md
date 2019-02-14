@@ -10,3 +10,10 @@ This is **VERY** much an in-progress-pre-alpha project.
 - Document operation and functions
 - Record motivation
 - Set up CI
+
+
+# Caveats
+
+- Doesn't do any shell expansion
+- Doens't play well with symlinks
+- Only intended to operate on files and directories
