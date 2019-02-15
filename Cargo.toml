@@ -28,3 +28,7 @@ path = "src/bin/main.rs"
 doc = false
 test = true
 required-features = ["glob"]
+
+
+[badges]
+maintenance = {status = "experimental"}
