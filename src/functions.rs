@@ -278,7 +278,7 @@ fn rec_copy(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
     let src = get_arg!("rec-copy", args, 0, RhizValue::String);
     let target = get_arg!("rec-copy", args, 1, RhizValue::String);
 
-    let src_path = Path::new(src);
+    let src_path = working_dir.join(Path::new(src));
     if !src_path.exists() {
         error_with!("source directory doesn't exist ({})", src_path.display());
     }
@@ -288,7 +288,7 @@ fn rec_copy(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
             src_path.display()
         );
     }
-    let target_path = Path::new(target);
+    let target_path = working_dir.join(Path::new(target));
     if !target_path.exists() {
         error_with!("target directory doesn't exist ({})", target_path.display());
     }
@@ -299,7 +299,7 @@ fn rec_copy(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
         );
     }
 
-    copy_tools::copy_dir(src_path, target_path)?;
+    copy_tools::copy_dir(&src_path, &target_path)?;
 
     Ok(())
 }

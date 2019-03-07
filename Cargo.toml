@@ -1,10 +1,10 @@
 [package]
 name = "rhiz"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Nat Knight <nathaniel.ep@gmail.com>"]
 edition = "2018"
 description = "A deliberately minimal cross-platform task runner."
-license = "MIT"
+license = "AGPL-3.0-or-later"
 readme = "README.md"
 repository = "https://bitbucket.org/nathanielknight/rhiz/"
 homepage = "https://bitbucket.org/nathanielknight/rhiz/"
