@@ -11,3 +11,13 @@ fn test_basic_compilation_and_execution() {
     let cwd = pbuf.as_path();
     exec_task("dummy-task", &compiled, &cwd).unwrap();
 }
+
+#[test]
+fn test_basic_with_par() {
+    let src = r#"(task "dummy-task" (par (log "This is a dummy task") (log "such a parallel dummy task")))"#;
+    let parsed = parse_rhiz_program(src).unwrap();
+    let compiled = compile(&parsed).unwrap();
+    let pbuf = std::env::current_dir().unwrap();
+    let cwd = pbuf.as_path();
+    exec_task("dummy-task", &compiled, &cwd).unwrap();
+}

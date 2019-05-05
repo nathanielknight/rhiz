@@ -2,8 +2,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use rayon::prelude::*;
+
 use crate::ast::RhizValue;
-use crate::executor::{ExecutionError, ExecutionResult};
+use crate::executor::{exec_sexpr, ExecutionError, ExecutionResult};
 
 type RhizFunction = Fn(&[RhizValue], &Path) -> ExecutionResult;
 
@@ -55,8 +57,28 @@ pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
         "delete" => Some(Box::new(delete)),
         "copy" => Some(Box::new(copy)),
         "rec-copy" => Some(Box::new(rec_copy)),
+        "par" => Some(Box::new(par)),
         _ => None,
     }
+}
+
+/// Execute tasks in parallel
+/// (par (some other task), (some other task))
+fn par(args: &[RhizValue], cwd: &Path) -> ExecutionResult {
+    args.par_iter()
+        .map(|arg| match arg {
+            RhizValue::SExpr(x) => exec_sexpr(x, cwd),
+            _ => error_with!("`par` needs sexprs!"),
+        })
+        .fold(
+            || Ok(()),
+            |acc, elem| match (&acc, &elem) {
+                (Ok(_), Ok(_)) => Ok(()),
+                (Err(_), _) => acc,
+                (Ok(_), Err(_)) => elem,
+            },
+        )
+        .collect()
 }
 
 fn join_cwd(cwd: &Path, fpath: &str) -> PathBuf {
