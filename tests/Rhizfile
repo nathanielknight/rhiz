@@ -1,0 +1,23 @@
+(task "hello"
+  "Rhiz says hello to the world"
+  (log "Rhiz says hello!"))  ;; Such a brave little program!
+
+(task "copy"
+  (empty-dir "test")
+  (copy "Rhizfile" "test"))
+
+(task "install"
+  "Install `rhiz` as a local binary"
+  (exec cargo install rhiz --path . --force))
+
+(task "check-nums"
+  "Verify that numbers can be atoms"
+  (exec 5))
+
+(task "par_hello"
+  (par
+    (exec sleep "5")
+    (log "Hello!")
+    (exec sleep "5")
+    (exec sleep "5")
+    (log "Again!")))
