@@ -21,6 +21,7 @@ default = ["glob"]
 pest = "^2.0"
 pest_derive = "^2.0"
 glob = {version = "^0.2", optional = true}
+rayon = "1.0"
 
 [[bin]]
 name = "rhiz"

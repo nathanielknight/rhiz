@@ -5,8 +5,42 @@ use crate::ast;
 use crate::compiler;
 use crate::functions;
 
-pub type ExecutionError = Box<std::error::Error>;
 pub type ExecutionResult = Result<(), ExecutionError>;
+
+#[derive(Debug)]
+pub struct ExecutionError {
+    msg: String,
+}
+
+impl From<String> for ExecutionError {
+    fn from(msg: String) -> Self {
+        ExecutionError { msg }
+    }
+}
+
+impl From<&str> for ExecutionError {
+    fn from(msg: &str) -> Self {
+        ExecutionError {
+            msg: msg.to_owned(),
+        }
+    }
+}
+
+impl From<Box<std::error::Error>> for ExecutionError {
+    fn from(error: Box<std::error::Error>) -> Self {
+        ExecutionError {
+            msg: error.to_string(),
+        }
+    }
+}
+
+impl From<std::io::Error> for ExecutionError {
+    fn from(error: std::io::Error) -> Self {
+        ExecutionError {
+            msg: error.to_string(),
+        }
+    }
+}
 
 pub fn execute(
     func_name: &ast::RhizValue,
@@ -23,7 +57,7 @@ pub fn execute(
     func(args, working_dir)
 }
 
-fn exec_sexpr(contents: &[ast::RhizValue], working_dir: &Path) -> ExecutionResult {
+pub fn exec_sexpr(contents: &[ast::RhizValue], working_dir: &Path) -> ExecutionResult {
     if contents.is_empty() {
         let msg = "Can't eval an empty expression";
         return Err(ExecutionError::from(msg));

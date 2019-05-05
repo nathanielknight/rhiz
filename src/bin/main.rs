@@ -1,9 +1,9 @@
-type CommandError = Box<std::error::Error>;
-type CommandResult<T> = Result<T, CommandError>;
-
 use rhiz::ast;
 use rhiz::compiler;
 use rhiz::executor;
+
+type CommandError = executor::ExecutionError;
+type CommandResult<T> = Result<T, CommandError>;
 
 const RHIZFILE_PATTERN: &str = "[Rr]hizfile";
 
