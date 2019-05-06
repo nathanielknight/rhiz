@@ -1,8 +1,24 @@
-# Rhizome
+# Rhiz
 
-A deliberately minimal cross-platform task runner.
+A deliberately minimal task runner.
 
-This is **VERY** much an in-progress-pre-alpha project.
+This is an in-progress-pre-alpha project.
+
+Rhiz executes tasks defined in a "Rhizfile", containing task descriptions
+with a Lisp like syntax.
+
+```scheme
+(task "hello"
+  (log "Rhiz says hello"))
+
+;; Comments start with a semicolon
+(task "fizzbuzz"
+  "Tasks can have an optional description"
+  (exec fizzbuzz.exe))
+
+(task "clean"
+  (delete "./output"))
+```
 
 # Commands
 
@@ -12,17 +28,16 @@ This is **VERY** much an in-progress-pre-alpha project.
 - `delete`: Delete a file (if it exists).
 - `copy`: Copy a file; wont' overwrite an existing file.
 - `rec-copy`: Recursively copy one directory's contents into another.
+- `par`: Perform a set of commands in parallel.
 
 
-# TODO
+# TODO (Code)
 
-- Document operation and functions
-- Record motivation
-- Set up CI
+- Set up CI?
+- Migrate to GitHub?
 
+# TODO (Documentation)
 
-# Caveats
-
-- Doesn't do any shell expansion
-- Doens't play well with symlinks
-- Only intended to operate on files and directories
+- Overview (motivation, high-level operation)
+- Reference information on each function (e.g. "do copy and rec-copy follow symlinks")
+- Example Rhizfile(s) (with equivalent script/makefile?)
