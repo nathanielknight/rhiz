@@ -7,9 +7,14 @@ use crate::functions;
 
 pub type ExecutionResult = Result<(), ExecutionError>;
 
-#[derive(Debug)]
 pub struct ExecutionError {
     msg: String,
+}
+
+impl std::fmt::Debug for ExecutionError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.msg)
+    }
 }
 
 impl From<String> for ExecutionError {

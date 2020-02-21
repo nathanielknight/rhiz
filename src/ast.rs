@@ -51,9 +51,7 @@ fn collect_or_first_error(pairs: Pairs<Rule>) -> Result<Vec<RhizValue>, String> 
     Ok(result)
 }
 
-fn parse_value(pair: Pair<Rule>) -> Result<RhizValue, String>
-where
-{
+fn parse_value(pair: Pair<Rule>) -> Result<RhizValue, String> {
     match pair.as_rule() {
         Rule::program => {
             let exprs = collect_or_first_error(pair.into_inner())?;
