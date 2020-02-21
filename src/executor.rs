@@ -26,8 +26,8 @@ impl From<&str> for ExecutionError {
     }
 }
 
-impl From<Box<std::error::Error>> for ExecutionError {
-    fn from(error: Box<std::error::Error>) -> Self {
+impl From<Box<dyn std::error::Error>> for ExecutionError {
+    fn from(error: Box<dyn std::error::Error>) -> Self {
         ExecutionError {
             msg: error.to_string(),
         }

@@ -8,7 +8,6 @@ type CommandResult<T> = Result<T, CommandError>;
 const RHIZFILE_PATTERN: &str = "[Rr]hizfile";
 
 fn rhizfile_in_dir(dirpath: &std::path::Path) -> Option<std::path::PathBuf> {
-    use glob;
     let pattern_src = format!(
         "{}/{}",
         dirpath.to_str().expect("paths should be valid utf-8"),

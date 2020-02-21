@@ -7,7 +7,7 @@ use rayon::prelude::*;
 use crate::ast::RhizValue;
 use crate::executor::{exec_sexpr, ExecutionError, ExecutionResult};
 
-type RhizFunction = Fn(&[RhizValue], &Path) -> ExecutionResult;
+type RhizFunction = dyn Fn(&[RhizValue], &Path) -> ExecutionResult;
 
 macro_rules! error_with {
     ($msg:expr $(, $p:expr)* ) => {

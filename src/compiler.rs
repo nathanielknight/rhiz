@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::ast;
 
-pub type CompilationError = Box<std::error::Error>;
+pub type CompilationError = Box<dyn std::error::Error>;
 pub type CompilationResult<T> = Result<T, CompilationError>;
 
 /// Compilation target for s-xpressions of the format
