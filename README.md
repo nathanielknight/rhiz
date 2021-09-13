@@ -56,8 +56,8 @@ returns a non-zero exit code the the Rhiz immediately exits.
     href="https://doc.rust-lang.org/std/process/struct.Command.html">
       <code>std::process:Command</code>
     </a>
-    (effectively: <code>Command::new(first_arg).args(rest_of_args)</code>)
-  </p>.
+    (effectively: <code>Command::new(first_arg).args(rest_of_args)</code>).
+  </p>
 </dd>
 
 <dt><code>empty-dir</code></dt>
