@@ -1,8 +1,10 @@
+/// Abstract syntax tree for a Rhiz file.
 use pest::iterators::{Pair, Pairs};
 use pest::Parser;
 
 use crate::parser::{RhizParser, Rule};
 
+/// Elements of a Rhizfile.
 #[derive(Debug, PartialEq)]
 pub enum RhizValue {
     Program(Vec<RhizValue>),
@@ -40,6 +42,7 @@ impl std::convert::From<&RhizValue> for String {
     }
 }
 
+/// Convert
 fn collect_or_first_error(pairs: Pairs<Rule>) -> Result<Vec<RhizValue>, String> {
     let mut result = Vec::new();
     for p in pairs {
@@ -51,6 +54,7 @@ fn collect_or_first_error(pairs: Pairs<Rule>) -> Result<Vec<RhizValue>, String> 
     Ok(result)
 }
 
+/// Extract a (possibly nested) `RhizValue` from a Pest parser pair.
 fn parse_value(pair: Pair<Rule>) -> Result<RhizValue, String> {
     match pair.as_rule() {
         Rule::program => {
@@ -85,5 +89,22 @@ pub fn parse_rhiz_program(src: &str) -> Result<RhizValue, String> {
 #[test]
 fn test_parse_values() {
     let example_src = r#"(Once there was) (a "way" to get "back home")"#;
-    assert!(parse_rhiz_program(example_src).is_ok())
+    let expected = RhizValue::Program(vec![
+        RhizValue::SExpr(vec![
+            RhizValue::Symbol("Once".to_owned()),
+            RhizValue::Symbol("there".to_owned()),
+            RhizValue::Symbol("was".to_owned()),
+        ]),
+        RhizValue::SExpr(vec![
+            RhizValue::Symbol("a".to_owned()),
+            RhizValue::String("way".to_owned()),
+            RhizValue::Symbol("to".to_owned()),
+            RhizValue::Symbol("get".to_owned()),
+            RhizValue::String("back home".to_owned()),
+        ]),
+    ]);
+    debug_assert_eq!(
+        parse_rhiz_program(example_src).expect("Failed to prase example program"),
+        expected
+    );
 }
