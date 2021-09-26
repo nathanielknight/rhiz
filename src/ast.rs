@@ -1,4 +1,4 @@
-/// Abstract syntax tree for a Rhiz file.
+//! Abstract syntax tree for a Rhiz file.
 use pest::iterators::{Pair, Pairs};
 use pest::Parser;
 

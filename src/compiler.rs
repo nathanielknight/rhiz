@@ -1,3 +1,6 @@
+//! This module contains a struct which holds the information necessary to
+//! execute a Rhiz task and the implementation for creating these structs from a
+//! Rhizfile's AST.
 use std::collections::HashMap;
 
 use crate::ast;
