@@ -32,7 +32,7 @@ fn test_parse_sexpr() {
     for case in &err_cases {
         let msg = format!("Expected '{}' to not parse to a sexpr", &case);
         let parsed = RhizParser::parse(Rule::sexpr, case);
-        assert!(parsed.is_err(), msg);
+        assert!(parsed.is_err(), "{}", msg);
     }
 }
 
@@ -47,6 +47,6 @@ fn test_parse_program() {
     for case in &err_cases {
         let msg = format!("Expected '{}' to not parse to a program", case);
         let parsed = RhizParser::parse(Rule::file, case);
-        assert!(parsed.is_err(), msg);
+        assert!(parsed.is_err(), "{}", msg);
     }
 }

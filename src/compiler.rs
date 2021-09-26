@@ -55,10 +55,7 @@ impl<'a> Task<'a> {
             Some(_) => &items[3..],
             None => &items[2..],
         };
-        if rest.iter().any(|v| match v {
-            ast::RhizValue::SExpr(_) => false,
-            _ => true,
-        }) {
+        if rest.iter().any(|v| !matches!(v, ast::RhizValue::SExpr(_))) {
             let msg = "Tasks should only contain SExprs";
             return Err(CompilationError::from(msg));
         }

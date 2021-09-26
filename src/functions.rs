@@ -112,7 +112,7 @@ fn exec(args: &[RhizValue], working_dir: &Path) -> ExecutionResult {
         error_with!("`exec` needs at least one argument");
     }
 
-    let cmd_name = val_to_string(&args[0]).ok_or(ExecutionError::from(
+    let cmd_name = val_to_string(&args[0]).ok_or_else(|| ExecutionError::from(
         "`exec` takes a string or symbol as a command name",
     ))?;
 

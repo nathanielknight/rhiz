@@ -52,7 +52,7 @@ pub fn execute(
     args: &[ast::RhizValue],
     working_dir: &Path,
 ) -> ExecutionResult {
-    let func = match functions::look_up_function(&func_name) {
+    let func = match functions::look_up_function(func_name) {
         Some(f) => f,
         None => {
             let msg = format!("Invalid function: {:?}", func_name);

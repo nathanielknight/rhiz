@@ -36,14 +36,14 @@ fn find_rhizfile() -> CommandResult<std::path::PathBuf> {
     }
 }
 
-fn file_dir<'a>(filepath: &'a std::path::PathBuf) -> CommandResult<&'a std::path::Path> {
+fn file_dir(filepath: &std::path::Path) -> CommandResult<&std::path::Path> {
     filepath
         .parent()
-        .ok_or(CommandError::from("Rhizfile has no parent?"))
+        .ok_or_else(|| CommandError::from("Rhizfile has no parent?"))
 }
 
 fn print_tasks(
-    path: &std::path::PathBuf,
+    path: &std::path::Path,
     tasks: &std::collections::HashMap<String, compiler::Task>,
 ) -> CommandResult<()> {
     println!("Tasks in '{}': ", path.display());
