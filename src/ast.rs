@@ -9,7 +9,6 @@ use crate::parser::{RhizParser, Rule};
 pub enum RhizValue {
     Program(Vec<RhizValue>),
     SExpr(Vec<RhizValue>),
-    Symbol(String),
     String(String),
 }
 
@@ -17,7 +16,6 @@ impl std::convert::From<&RhizValue> for String {
     fn from(v: &RhizValue) -> String {
         match v {
             RhizValue::String(s) => format!("\"{}\"", s),
-            RhizValue::Symbol(s) => s.to_owned(),
             RhizValue::SExpr(contents) => {
                 let mut outp = String::new();
                 let items = contents.iter();
@@ -67,7 +65,7 @@ fn parse_value(pair: Pair<Rule>) -> Result<RhizValue, String> {
         }
         Rule::symbol => {
             let raw = pair.as_str().to_owned();
-            Ok(RhizValue::Symbol(raw))
+            Ok(RhizValue::String(raw))
         }
         Rule::string => {
             let raw = pair.as_str();
@@ -91,15 +89,15 @@ fn test_parse_values() {
     let example_src = r#"(Once there was) (a "way" to get "back home")"#;
     let expected = RhizValue::Program(vec![
         RhizValue::SExpr(vec![
-            RhizValue::Symbol("Once".to_owned()),
-            RhizValue::Symbol("there".to_owned()),
-            RhizValue::Symbol("was".to_owned()),
+            RhizValue::String("Once".to_owned()),
+            RhizValue::String("there".to_owned()),
+            RhizValue::String("was".to_owned()),
         ]),
         RhizValue::SExpr(vec![
-            RhizValue::Symbol("a".to_owned()),
+            RhizValue::String("a".to_owned()),
             RhizValue::String("way".to_owned()),
-            RhizValue::Symbol("to".to_owned()),
-            RhizValue::Symbol("get".to_owned()),
+            RhizValue::String("to".to_owned()),
+            RhizValue::String("get".to_owned()),
             RhizValue::String("back home".to_owned()),
         ]),
     ]);

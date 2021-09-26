@@ -28,7 +28,7 @@ impl<'a> Task<'a> {
             return Err(CompilationError::from("Invalid task declaration"));
         };
         match &items[0] {
-            ast::RhizValue::Symbol(s) => {
+            ast::RhizValue::String(s) => {
                 if s != "task" {
                     let msg = "Only 'task' declarations allowed at the top-level of a Rhizfile";
                     return Err(CompilationError::from(msg));

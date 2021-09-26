@@ -47,7 +47,7 @@ macro_rules! get_arg {
 
 pub fn look_up_function(func_name: &RhizValue) -> Option<Box<RhizFunction>> {
     let symbol_name = match func_name {
-        RhizValue::Symbol(s) => s,
+        RhizValue::String(s) => s,
         _ => return None,
     };
     match symbol_name.as_ref() {
@@ -90,7 +90,6 @@ fn join_cwd(cwd: &Path, fpath: &str) -> PathBuf {
 fn val_to_string(rval: &RhizValue) -> Option<String> {
     match rval {
         RhizValue::String(s) => Some(s.to_owned()),
-        RhizValue::Symbol(s) => Some(s.to_owned()),
         _ => None,
     }
 }
