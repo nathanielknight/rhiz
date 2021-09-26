@@ -1,6 +1,6 @@
 [package]
 name = "rhiz"
-version = "0.5.1"
+version = "0.6.0"
 authors = [
     "Nat Knight <nathaniel.ep@gmail.com>",
     "Dorian Scheidt <dorian.scheidt@gmail.com>",

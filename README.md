@@ -13,49 +13,30 @@ with a Lisp-like syntax.
 
 ;; Comments start with a semicolon
 (task "fizzbuzz"
-  "Tasks can have an optional description"  ;; Strings are double-quoted.
+  "Tasks can have an optional description"  ;; Strings with spaces are double-quoted.
   (exec fizzbuzz.exe)
   (log "The fizz was buzzed"))
 
 (task "clean"
   (delete "./output"))
+
+("task" echo
+  ("echo" "Bare words and quoted strings are equivalent")))
 ```
 
 
 # Task execution
 
-Tasks are executed **relative to the root directory**, not the directory where
-`rhiz` is invoked. When `rhiz` is invoked.
+Tasks are executed **relative to the directory containing the `Rhizfile`**, not
+the directory where `rhiz` is invoked. When `rhiz` is invoked.
 
-The commands in a task are executed serially, and if a command returns a
-non-zero exit code the the task immediately exits.
-
-
-# Rhizfile syntax
-
-Rhiz has two primitives:
-
-* Strings, which should be double-quoted (e.g `"Sphinx of black quartz, judge my vow"`)
-* Atoms, whitespace-separated words (e.g. `task`, `log`, `cargo`)
-
-They can be used interchangeably in some places, but not everywhere.
-
-Tasks and commands are built of s-expressions, which are a list
-followed by one or more arguments (which can be strings, atoms, or other s-expressions).
-
-For example, the expression
-
-```
-(task "foo" (exec foo))
-```
-has the command `task` with the arguments `"foo"` and `(exec foo`), which are a
-string and an s-expression, respectively.
-
+The commands in a task are executed one after the other, and if a command
+returns a non-zero exit code the the Rhiz immediately exits.
 
 # Commands
 
 <dl>
-<dt><code>pre</code></dt>
+<dt><code>log</code></dt>
 <dd>
   <p>Prints a message to the standard output. Takes a single argument, 
   which should be a string.</p>
@@ -68,9 +49,9 @@ string and an s-expression, respectively.
     (usually the project root).
   </p>
   <p>
-    Takes one or more strings and/or atoms as argument(s). The arguments are
-    converted to strings; the first should be the name of an external program;
-    the remainder should be it's arguments. They're executed using
+    Takes one or more  argument(s). The arguments are converted to strings; the first
+    should be the name of an external program; the remainder should be it's arguments.
+    They're executed using
     <a 
     href="https://doc.rust-lang.org/std/process/struct.Command.html">
       <code>std::process:Command</code>
@@ -94,7 +75,7 @@ string and an s-expression, respectively.
 <dd>
   <p>
     Delete a file. It takes a single argument, which should be
-    a string containing a file name or path (relative to the Rhizfile).
+    a file name or path (relative to the Rhizfile).
   </p>
   <p>
     If the file indicated by the path exists it's delete with
@@ -109,8 +90,7 @@ string and an s-expression, respectively.
 <dt><code>copy</code></dt>
 <dd>
   <p>
-    Copy a file. Takes two arguments (both strings) representing the
-    source and destination paths for the copy.
+    Copy a file. Takes two arguments: the source and destination paths for the copy.
   </p>
   <p>
     The source should be the path to a file (relative to the Rhizfile).
@@ -131,8 +111,8 @@ string and an s-expression, respectively.
 <dt><code>rec-copy</code></dt>
 <dd>
   <p>
-    Recursively copies a directory. Takes to arguments (both strings) representing the
-    source and destination paths for the copy.
+    Recursively copies a directory. Takes to arguments: the source and destination
+    paths for the copy.
   </p>
   <p>
     Both the source and target directories should exist. The files and directories in the
