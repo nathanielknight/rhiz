@@ -14,6 +14,11 @@
   "Verify that numbers can be atoms"
   (exec 5))
 
+("task" check-symbols
+  "Verify that numbers and symbols are the same"
+  ("exec" echo "Numbers and symbols" are the same)
+)
+
 (task "par_hello"
   (par
     (exec sleep "5")
