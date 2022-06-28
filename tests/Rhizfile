@@ -6,6 +6,9 @@
   (empty-dir "test")
   (copy "Rhizfile" "test"))
 
+(task copy-with-spaces
+  (copy "Rhizfile" "Rhizfile The IInd"))
+
 (task "install"
   "Install `rhiz` as a local binary"
   (exec cargo install rhiz --path . --force))
